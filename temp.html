@@ -1,0 +1,121 @@
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="Tạo ảnh đại diện chiến dịch nhân đạo Hành trình đỏ" name="description"/>
+    <meta content="haulht@outlook.com" name="author"/>
+    <meta property="og:image" content="logo_hanhtrinhdo.png" />
+    <title>Tạo ảnh đại diện chiến dịch nhân đạo Hành trình đỏ</title>
+	<link rel="icon" type="image/png" href="logo_hanhtrinhdo.png" />
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+	<link href="css/style.css" rel="stylesheet" type="text/css" />
+
+    <script src="jquery.v2.0.0.min.js"></script>
+    <script src="jquery.cropit.js"></script>
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-74501075-4', 'auto');
+	  ga('send', 'pageview');
+
+	</script>
+</head>
+<body>
+	<div class="image-size-label" style="padding:10px; color:red; text-align:center">
+		TẠO ẢNH ĐẠI DIỆN CHIẾN DỊCH NHÂN ĐẠO HÀNH TRÌNH ĐỎ
+    </div>
+    <div class="main-content">
+        <div class="image-editor">
+            <div class="column">
+                <div class="cropit-image-preview" id="crop-image"></div>
+                <canvas id="leCanvas" width="500" height="500"></canvas>
+            </div>
+            <div class="column">
+                <p class="note"><strong>Chú ý:</strong>
+				<br>* Sử dụng ảnh kích thước độ phân giải từ 500 pixel trở lên.
+				<br>* Sử dụng trình duyệt Chrome hoặc IE để tải ảnh.<br></p>
+                <div class="image-size-label">
+                    Thay đổi kích thước
+                </div>
+                <input type="range" class="cropit-image-zoom-input">
+                <div class="image-size-label">
+                    Xoay hình
+                </div>
+                <div id='controls'>
+                  <button id='rotate_left'  type='button' title='Rotate left'> <i class="fa fa-rotate-left"></i> </button>
+                  <button id='rotate_right' type='button' title='Rotate right'> <i class="fa fa-rotate-right"></i> </button>
+                </div>
+                <input type="file" class="cropit-image-input">
+                <div class="select-image-btn">Chọn ảnh</div>
+                <button class="export" onclick="downloadCV()">Tải ảnh</button>
+            </div>
+        </div>
+
+    </div>
+    <div class="footer">
+        <span>Designed by <a href="mailto:haulht@outlook.com" target="_top">haulht@outlook.com</a> - <a href="http://tuoitre.uit.edu.vn/" target="_blank">Đoàn trường ĐH Công nghệ Thông tin</a></span>
+    </div>
+    <script>
+        var canvas = document.getElementById("leCanvas");
+        var context = canvas.getContext("2d");
+        var deg = 0;
+
+        var image = new Image();
+        var strSourceBG = "khung.png";
+        image.src = strSourceBG;
+        image.onload = function() {
+            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        };
+        $(function() {
+            $('.image-editor').cropit({
+                imageState: {
+                    src: 'photo.png'
+                }
+            });
+            $('.select-image-btn').click(function() {
+                $('.cropit-image-input').click();
+            });
+            $('#rotate_right').click(function(){
+                deg += 90;
+                if(deg >=360) deg = 0;
+                $('#crop-image').css('transform','rotate('+deg+'deg)');
+            });
+            $('#rotate_left').click(function(){
+                deg -= 90;
+                if(deg <= -360) deg = 0;
+                $('#crop-image').css('transform','rotate('+deg+'deg)');
+            });
+        });
+
+        function downloadCV(t) {
+            var img = new Image();
+            img.src = $('.image-editor').cropit('export');
+            img.onload = function(){
+                context.translate(canvas.width/2,canvas.height/2);
+                context.rotate(deg*Math.PI/180);
+                context.drawImage(img,-img.width/2,-img.width/2);
+                context.rotate(-deg*Math.PI/180);
+                context.translate(-canvas.width/2,-canvas.height/2);
+                var image = new Image();
+                image.src = strSourceBG;
+                image.onload = function() {
+                    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+                    var imageData = canvas.toDataURL('image/png');
+                    imageData = imageData.replace(/^data:image\/[^;]*/, 'data:application/octet-stream');
+                    imageData = imageData.replace(/^data:application\/octet-stream/, 'data:application/octet-stream;headers=Content-Disposition%3A%20attachment%3B%20filename=Canvas.png');
+                    var link = document.createElement('a');
+                    link.download = 'photo.png';
+                    link.href = imageData;
+                    link.click();
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+                };
+            }
+        };
+    </script>
+</body>
+</html>
